@@ -1,0 +1,52 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+    <script>
+
+      document.addEventListener('DOMContentLoaded', edit_post);
+      //const this_post = document.querySelector('#this_post').value;
+      edit_post()
+      function edit_post() {
+          //const post_id = document.querySelector('#this_post').value;
+          const post_id = document.getElementById('this_post').textContent;
+          fetch(`/edit_2/${post_id}`)
+          .then(response => response.json())
+          .then(post => {
+            console.log(post);
+            var content = post.content;
+            document.getElementById('content').value = content;
+            const w_content = document.getElementById('content').value;
+            document.querySelector('button').onclick = function() {
+                fetch(`/edit_2/${post_id}`, {
+                  method: 'PUT',
+                  body: JSON.stringify({
+                      content: w_content
+                  })
+                })
+            .then(response => response.json())
+            .then(result => {
+              console.log(result);
+            })
+          }
+        })
+       }
+    </script>
+
+    <h1 style="margin-left: 35px;">Edit Post</h1>
+    <div id="compose-post" class="row">
+        <div class="container-fluid" style="border: 1px outset red; background-color: lightblue; margin: 35px; padding: 10px">
+          <!--<h4 style="padding: 10px;">New Post</h4>-->
+          <form method="post" onsubmit="return false;">
+            {% csrf_token %}
+            <textarea id="content" name="content" rows="3" cols="180">
+            </textarea>
+            <br/>
+            <button type="button" id="button">Save</button>
+          </form>
+        </div>
+    </div>
+
+    <h6 id="this_post">{{ post.id }}</h6>
+
+{% endblock %}
